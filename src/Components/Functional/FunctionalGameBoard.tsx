@@ -1,6 +1,7 @@
 import './styles/game-board.css';
 import { Images } from '../../assets/Images';
-import { useState } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
+import { ScoreType } from './FunctionalApp';
 
 const initialFishes = [
   {
@@ -21,12 +22,26 @@ const initialFishes = [
   },
 ];
 
-export function FunctionalGameBoard() {
+type IProps = {
+  score: ScoreType;
+  setScore: Dispatch<SetStateAction<ScoreType>>;
+};
+
+export function FunctionalGameBoard({ setScore }: IProps) {
+  const [nextFishToName, setNextFishToName] = useState(initialFishes[0]);
   const [input, setInput] = useState('');
-  const nextFishToName = initialFishes[0];
 
   const submitGuess = (guess: string) => {
-    console.log(guess);
+    const nextFishIndex =
+      initialFishes.indexOf(nextFishToName) + 1 < initialFishes.length
+        ? initialFishes.indexOf(nextFishToName) + 1
+        : 0;
+    if (guess === nextFishToName.name) {
+      setScore((prev) => ({ ...prev, correct: prev.correct + 1 }));
+    } else {
+      setScore((prev) => ({ ...prev, incorrect: prev.incorrect + 1 }));
+    }
+    setNextFishToName(initialFishes[nextFishIndex]);
   };
 
   return (
